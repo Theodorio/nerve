@@ -30,6 +30,8 @@ yarn-error.log*
 
 # Tokens, secrets and outputs
 tokens/
+.wwebjs_auth/
+.wwebjs_cache/
 output/
 logs/
 *.log

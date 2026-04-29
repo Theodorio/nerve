@@ -1,6 +1,0 @@
-2026/04/29-09:30:05.713 3e88 Reusing MANIFEST C:\Users\theod\OneDrive\Dokumente\agent\nerve\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
-2026/04/29-09:30:05.723 3e88 Recovering log #3
-2026/04/29-09:30:05.730 3e88 Reusing old log C:\Users\theod\OneDrive\Dokumente\agent\nerve\.wwebjs_auth\session\Default\Local Storage\leveldb/000003.log 
-2026/04/29-09:32:14.785 3568 Level-0 table #5: started
-2026/04/29-09:32:14.795 3568 Level-0 table #5: 19703 bytes OK
-2026/04/29-09:32:14.801 3568 Delete type=0 #3
