@@ -1,0 +1,51 @@
+.env
+.env.*
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.python-version
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Packages and builds
+build/
+dist/
+pip-wheel-metadata/
+*.egg-info/
+*.egg
+*.whl
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Tokens, secrets and outputs
+tokens/
+output/
+logs/
+*.log
+*.log.*
+
+# Test and coverage
+.coverage
+coverage/
+htmlcov/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db

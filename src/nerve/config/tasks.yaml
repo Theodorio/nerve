@@ -1,0 +1,146 @@
+recon_task:
+  description: >
+    Perform comprehensive reconnaissance against target: {target_domain}.
+    
+    Execute in this exact order:
+    1. Run subfinder to enumerate all subdomains
+    2. Run httpx to probe live services with tech detection
+    3. Run nmap service scan (-sV -sC) against discovered hosts
+    4. Run gowitness to capture screenshots of all services
+    
+    Parse all outputs and return structured JSON with:
+    - live_hosts: list of URLs with status codes, titles, technologies
+    - open_services: ports, services, versions from nmap
+    - screenshot_paths: visual evidence
+    - tech_stack: aggregated technology fingerprints
+    
+    Flag outdated software. Only include responding hosts.
+  expected_output: >
+    Valid JSON object with keys: live_hosts, open_services, 
+    screenshot_paths, tech_stack.
+
+web_crawl_task:
+  description: >
+    Crawl all live web services from reconnaissance results.
+    
+    For each live host:
+    1. Run katana (depth 3, JS crawl) to discover endpoints
+    2. Run arjun to find hidden parameters
+    3. Use Playwright to extract forms, inputs, links, scripts
+    
+    Return structured JSON mapping each host to:
+    - endpoints: discovered URLs
+    - forms: action URLs, methods, input fields
+    - parameters: query/body parameters
+    - js_files: external scripts
+    - auth_endpoints: login/register/reset pages
+    
+    Flag endpoints accepting user input as priority targets.
+  expected_output: >
+    Valid JSON object mapping hosts to endpoints, forms, parameters, 
+    js_files, and auth_endpoints.
+
+vuln_scan_task:
+  description: >
+    Scan all discovered input vectors for vulnerabilities.
+    
+    For each endpoint with user input:
+    1. Run dalfox (JSON output, verified PoC only) for XSS
+    2. Run nuclei (severity critical/high/medium) for CVEs
+    3. Run sqlmap (batch, level 2) for SQL injection
+    
+    Return a JSON array of confirmed findings. Each entry must have:
+    id, type, target_url, parameter, payload, evidence, tool_used, 
+    confidence (high/medium/low).
+    
+    Filter false positives. Only report findings with concrete evidence.
+  expected_output: >
+    Valid JSON array of vulnerability objects.
+
+exploit_validation_task:
+  description: >
+    Validate all scanner findings in a real browser using Playwright.
+    
+    For each vulnerability:
+    - Launch headless Chromium, navigate to the target with payload
+    - Listen for alert/confirm/prompt dialogs
+    - If XSS confirmed: capture screenshot, record dialog text, 
+      attempt cookie exfiltration, test DOM XSS via hash/fragment
+    - For SQLi: submit payload via Playwright, verify error/time delay
+    
+    Return JSON array with:
+    vuln_id, validated (boolean), screenshot_b64, exploitation_chain, 
+    impact_demonstrated, console_logs, false_positive (boolean).
+    
+    Mark any finding that does not trigger in the browser as a 
+    potential false positive with a reason.
+  expected_output: >
+    Valid JSON array of validated exploitation results.
+
+severity_assessment_task:
+  description: >
+    Calculate severity for every validated finding.
+    
+    For each:
+    1. Determine CVSS v3.1 metrics (AV, AC, PR, UI, S, C, I, A)
+    2. Calculate base score and full vector string
+    3. Query EPSS API if CVE ID is present
+    4. Assess business impact: data sensitivity, regulatory, reputational
+    
+    Return JSON array with:
+    vuln_id, cvss_score, cvss_vector, severity_rating 
+    (Critical/High/Medium/Low), epss_score, business_impact, 
+    justification.
+  expected_output: >
+    Valid JSON array of severity assessment objects.
+
+patch_generation_task:
+  description: >
+    Generate patches and compile the final pentest report in markdown.
+    
+    For each finding:
+    - Provide code_fix patches (unified diff, before/after)
+    - Provide config_change patches (CSP headers, cookie flags)
+    - Provide waf_rule patches (ModSecurity rules)
+    - Provide architecture_change recommendations
+    
+    Then write the full report with:
+    1. Executive Summary (risk posture, counts)
+    2. Scope & Methodology
+    3. Findings ordered by severity (Critical→Low) with:
+       Description, Evidence, CVSS, PoC, Patch, References
+    4. Remediation Roadmap (7/30/90 day timeline)
+    5. Appendices
+    
+    Use markdown tables, code blocks with language tags, and 
+    severity badges. Save to the active report file.
+  expected_output: >
+    A single valid markdown string containing the complete penetration 
+    test report.
+
+report_generation_task:
+  description: >
+    Compile the complete penetration test report in professional markdown.
+    
+    Report structure:
+    1. Executive Summary (risk posture, severity counts)
+    2. Scope & Methodology (tools used, targets, timeframe)
+    3. Findings ordered by severity (Critical→Low):
+       - Description, Affected URL, Evidence, Impact
+       - CVSS Score and Vector, EPSS probability
+       - Proof of Concept with step-by-step reproduction
+       - Patch with code diff and implementation guidance
+       - References (CWE, OWASP, CVE)
+    4. Remediation Roadmap:
+       - Immediate (Critical/High — 7 days)
+       - Short-term (Medium — 30 days)
+       - Long-term (Low — 90 days)
+       - Defense-in-depth recommendations
+    5. Appendices (tool outputs, out-of-scope items)
+    
+    Use proper markdown with tables, code blocks with language tags,
+    and severity badges. Save to the active report file.
+  expected_output: >
+    Complete markdown document string containing the full penetration 
+    test report. Must be valid markdown with proper headings, tables, 
+    code blocks, and severity indicators.
